@@ -1,0 +1,6 @@
+{
+  "name": "FinPilot AI",
+  "description": "Autonomous Multi-Agent Finance Operations Platform for invoice intelligence, automated transaction reconciliation, fraud detection, and human-in-the-loop approvals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

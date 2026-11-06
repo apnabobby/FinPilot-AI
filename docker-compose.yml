@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # FinPilot AI Autonomous Multi-Agent Server (Express + Vite + Orchestrator)
+  finpilot-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finpilot_vultr_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DATABASE_URL=postgresql://finpilot_user:finpilot_secure_pass@postgres:5432/finpilot_db
+      - APP_URL=${APP_URL:-http://localhost:3000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - invoice_storage:/app/storage
+    networks:
+      - finpilot_network
+
+  # Relational PostgreSQL Database on Vultr VM
+  postgres:
+    image: postgres:16-alpine
+    container_name: finpilot_vultr_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: finpilot_user
+      POSTGRES_PASSWORD: finpilot_secure_pass
+      POSTGRES_DB: finpilot_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finpilot_user -d finpilot_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - finpilot_network
+
+  # Nginx Reverse Proxy with TLS and Rate Limiting
+  nginx:
+    image: nginx:alpine
+    container_name: finpilot_vultr_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - certs_data:/etc/letsencrypt
+    depends_on:
+      - finpilot-app
+    networks:
+      - finpilot_network
+
+volumes:
+  pgdata:
+    driver: local
+  invoice_storage:
+    driver: local
+  certs_data:
+    driver: local
+
+networks:
+  finpilot_network:
+    driver: bridge
