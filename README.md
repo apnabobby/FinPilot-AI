@@ -2,8 +2,9 @@
 
 > Powering the Future of Work | Built for Vultr: Agent Rush Hackathon (Challenge 2)
 
-[Live Demo URL](https://ais-dev-lq7gbojfjnrkxd2qktriet-688852864486.asia-southeast1.run.app) | [Demo Video](https://youtube.com/...)
+## 🚀 Live Demo
 
+🔗 [http://149.28.53.70](http://149.28.53.70)
 ---
 
 ## 1. Overview & Problem Statement
